@@ -2,8 +2,9 @@
 
 w<-1
 units<-c(6,6)
-source(file="InputData.R")
+source(file="InputData.R",echo=F)
 model<-NULL
+
 # Dimensiones de los inputs
 
 cat('Entrenamiento:', dim(x.train), '\n')
@@ -33,10 +34,14 @@ model$count_params()
 #### Entrenamiento ####
 
 set.seed(10)
-history<-model %>% fit(x.train, y.train, batch_size = batch_size,
-                       validation_data=list(x.val,y.val), epochs = epochs,
-                       verbose = 2, shuffle = FALSE,
-                       callbacks=list(reset))
+history<-model %>%
+  fit(x.train, y.train, batch_size = batch_size,
+      validation_data=list(x.val,y.val), epochs = epochs,
+      verbose = 2, shuffle = FALSE,
+      callbacks=list(reset,
+                    callback_early_stopping(monitor = "val_loss", min_delta = 0,
+                    patience = 10, verbose = 0, mode = c("min"),
+                    baseline = NULL, restore_best_weights = T)))
 
 #### Predicciones ####
 
@@ -109,4 +114,5 @@ for(j in 1:length(windows)){
 }
 w<-1
 name<-name.temp
+if(validation) name<-paste("s",s,"-",substring(name,1,nchar(name)-3),"-train",floor(portion.train*100),".h5",sep="")
 model %>% save_model_hdf5(name)

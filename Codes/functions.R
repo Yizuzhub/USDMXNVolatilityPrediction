@@ -23,9 +23,11 @@ mean2.estimate<-function(rend,window.size=1){
 }
 
 build.LSTM<-function(units=c(1,1),timesteps=1,batch_size=200, input_vars=1){
-  optim<-optimizer_adam(lr = 1e-3, beta_1 = 0.9, beta_2 = 0.999,
-                        epsilon = NULL, decay = 5e-4, amsgrad = T, clipnorm = NULL,
-                        clipvalue = NULL)
+  #  optim<-optimizer_adam(lr = 1e-3, beta_1 = 0.9, beta_2 = 0.999,
+  #                        epsilon = NULL, decay = 1e-4, amsgrad = F, clipnorm = NULL,
+  #                       clipvalue = NULL)
+  optim<-optimizer_adagrad(lr = 1e-2, epsilon = NULL, decay = 0,
+                           clipnorm = NULL, clipvalue = NULL)
   model <- keras_model_sequential()
   model %>%
     layer_lstm(units = units[1], return_sequences = T, stateful = T,
@@ -40,9 +42,11 @@ build.LSTM<-function(units=c(1,1),timesteps=1,batch_size=200, input_vars=1){
 }
 
 build.GRU<-function(units=c(1,1),timesteps=1,batch_size=200, input_vars=1){
-  optim<-optimizer_adam(lr = 1e-3, beta_1 = 0.9, beta_2 = 0.999,
-                        epsilon = NULL, decay = 5e-4, amsgrad = T, clipnorm = NULL,
-                        clipvalue = NULL)
+  #  optim<-optimizer_adam(lr = 1e-3, beta_1 = 0.9, beta_2 = 0.999,
+  #                        epsilon = NULL, decay = 1e-4, amsgrad = F, clipnorm = NULL,
+  #                       clipvalue = NULL)
+  optim<-optimizer_adagrad(lr = 1e-2, epsilon = NULL, decay = 0,
+                           clipnorm = NULL, clipvalue = NULL)
   model <- keras_model_sequential()
   model %>%
     layer_gru(units = units[1], return_sequences = T, stateful = T,
@@ -214,14 +218,14 @@ compare<-function(op){
 }
 
 prediction.sigma<-function(fit,w=1,val=T,t=1){
-  spec = getspec(fit)
+  spec <- getspec(fit)
   setfixed(spec) <- as.list(coef(fit))
   if(val){
-    pred = ugarchforecast(spec, n.ahead = t, n.roll = 0, data = rend[1:train.uindex.vec[w]], out.sample = 0)
+    pred <- ugarchforecast(spec, n.ahead = t, n.roll = 0, data = rend[1:train.uindex.vec[w]], out.sample = 0)
   }else{
-    pred = ugarchforecast(spec, n.ahead = t, n.roll = 0, data = rend[1:val.uindex.vec[w]], out.sample = 0)
+    pred <- ugarchforecast(spec, n.ahead = t, n.roll = 0, data = rend[1:val.uindex.vec[w]], out.sample = 0)
   }
-  pred.sigmas = sigma(pred)
+  pred.sigmas <- sigma(pred)
   return(pred.sigmas)
 }
 

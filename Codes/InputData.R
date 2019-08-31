@@ -12,8 +12,6 @@ xi<-list()
 if(isHybrid){
   nvars.x<-2
   if(isComb){
-    g1<-0.1580
-    a1<-0.1495
     nvars.x<-3
     escalar<-min(escalar,floor(1/max(sigmas.garch)),floor(1/max(sigmas.egarch)))
     #xi[[1]]<-((diff(fitteds.garch)[-1])/(sigmas.garch[-c(1,2)]))[windows[w]:(windows[w]+length(volatilities[[w]])-1)]
@@ -22,11 +20,11 @@ if(isHybrid){
     #xi[[2]]<-as.double(sigmas.egarch[windows[w]:(windows[w]+length(volatilities[[w]])-1)])*escalar
     temp<-c(0,diff(rend))
     xi[[1]]<-sapply((windows[w]):(windows[w]+length(volatilities[[w]])-1),function(x)
-      temp[x]*sigmas.garch[x])*escalar*5
+      abs(temp[x])*sigmas.garch[x])*escalar*floor(1/max(abs(temp)))
     xi[[2]]<-sapply((windows[w]):(windows[w]+length(volatilities[[w]])-1),function(x)
       ifelse(temp[x]<0,
-             (g1-a1)*temp[x]*sigmas.egarch[x],
-             (g1+a1)*temp[x]*sigmas.egarch[x]))*escalar*5
+             (-g1+a1)*temp[x]*sigmas.egarch[x],
+             (g1+a1)*temp[x]*sigmas.egarch[x]))*escalar*floor(1/max(abs(a1*temp+g1*abs(temp))))
     xi[[3]]<-volatilities[[w]]*escalar
     name<-"GARCH-EGARCH"
     if(isLSTM){
@@ -40,7 +38,8 @@ if(isHybrid){
     #xi[[1]]<-((diff(fitteds.garch)[-1])/(sigmas.garch[-c(1,2)]))[windows[w]:(windows[w]+length(volatilities[[w]])-1)]
     #xi[[1]]<-(diff(fitteds.garch)[-1])[windows[w]:(windows[w]+length(volatilities[[w]])-1)]*escalar
     temp<-c(0,diff(rend))
-    xi[[1]]<-sapply((windows[w]):(windows[w]+length(volatilities[[w]])-1),function(x) temp[x]*sigmas.garch[x])*escalar*5
+    xi[[1]]<-sapply((windows[w]):(windows[w]+length(volatilities[[w]])-1), function(x)
+      abs(temp[x])*sigmas.garch[x])*escalar*floor(1/max(abs(temp)))
     xi[[2]]<-volatilities[[w]]*escalar
     name<-"GARCH"
     if(isLSTM){
@@ -50,16 +49,14 @@ if(isHybrid){
     }
   }else{
     escalar<-min(escalar,floor(1/max(sigmas.egarch)))
-    g1<-0.1580
-    a1<-0.1495
     #xi[[1]]<-((diff(fitteds.egarch)[-1])/(sigmas.egarch[-c(1,2)]))[windows[w]:(windows[w]+length(volatilities[[w]])-1)]
     #xi[[1]]<-(diff(fitteds.egarch)[-1])[windows[w]:(windows[w]+length(volatilities[[w]])-1)]*escalar
     #xi[[1]]<-as.double(fitteds.egarch[windows[w]:(windows[w]+length(volatilities[[w]])-1)])*escalar
     temp<-c(0,diff(rend))
     xi[[1]]<-sapply((windows[w]):(windows[w]+length(volatilities[[w]])-1),function(x)
       ifelse(temp[x]<0,
-             (g1-a1)*temp[x]*sigmas.egarch[x],
-             (g1+a1)*temp[x]*sigmas.egarch[x]))*escalar*5
+             (-g1+a1)*temp[x]*sigmas.egarch[x],
+             (g1+a1)*temp[x]*sigmas.egarch[x]))*escalar*floor(1/max(abs(a1*temp+g1*abs(temp))))
     xi[[2]]<-volatilities[[w]]*escalar
     name<-"EGARCH"
     if(isLSTM){
