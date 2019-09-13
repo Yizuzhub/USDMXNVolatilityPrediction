@@ -78,6 +78,12 @@ predict.test[[j]] <- model.rnn[[j]] %>% predict(x.test, batch_size = batch_size)
 yval[[j]]<-y.val
 ytest[[j]]<-y.test
 ytrain[[j]]<-y.train
+a<-prediction.sigma.1d(garch.model,val=T,w=w,t=length(val.indexes.vec[[w]]))
+b<-prediction.sigma.1d(garch.model,val=F,w=w,t=length(rend)-val.uindex.ts)
+sigmas.garch<-c(as.double(sigma(garch.model)),a,b)
+a<-prediction.sigma.1d(egarch.model,val=T,w=w,t=length(val.indexes.vec[[w]]))
+b<-prediction.sigma.1d(egarch.model,val=F,w=w,t=length(rend)-val.uindex.ts)
+sigmas.egarch<-c(as.double(sigma(egarch.model)),a,b)
 s.g<-sigmas.garch[(val.uindex.vec[w]+windows[w]+1):(test.uindex.vec[w]+windows[w])]
 s.e<-sigmas.egarch[(val.uindex.vec[w]+windows[w]+1):(test.uindex.vec[w]+windows[w])]
 

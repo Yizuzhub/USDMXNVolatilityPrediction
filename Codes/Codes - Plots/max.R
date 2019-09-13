@@ -84,6 +84,12 @@ predict.val[[j]] <- model.rnn[[j]] %>% predict(x.val, batch_size = batch_size)
 predict.test[[j]] <- model.rnn[[j]] %>% predict(x.test, batch_size = batch_size)
 yval[[j]]<-y.val
 ytest[[j]]<-y.test
+a<-prediction.sigma.1d(garch.model,val=T,w=w,t=length(val.indexes.vec[[w]]))
+b<-prediction.sigma.1d(garch.model,val=F,w=w,t=length(rend)-val.uindex.ts)
+sigmas.garch<-c(as.double(sigma(garch.model)),a,b)
+a<-prediction.sigma.1d(egarch.model,val=T,w=w,t=length(val.indexes.vec[[w]]))
+b<-prediction.sigma.1d(egarch.model,val=F,w=w,t=length(rend)-val.uindex.ts)
+sigmas.egarch<-c(as.double(sigma(egarch.model)),a,b)
 s.g<-sigmas.garch[(val.uindex.vec[w]+windows[w]+1):(test.uindex.vec[w]+windows[w])]
 s.e<-sigmas.egarch[(val.uindex.vec[w]+windows[w]+1):(test.uindex.vec[w]+windows[w])]
 
@@ -126,10 +132,10 @@ p1<-ggplot(a, aes(x=as.Date(a$Fecha), y = value, color = variable))+th+
   geom_line(aes(y = a$Obs, col = "Observada"),size=1) +
   geom_line(aes(y = a$GARCH, col = "MA(1)-GARCH(1,1)"),size=0.8)+
   geom_line(aes(y = a$EGARCH, col = "MA(1)-EGARCH(1,1)"),size=0.8)+
-  labs(title="Volatilidad USD/MXN de 22 días",y="", x="",color = "Volatilidad")+
+  labs(title="Volatilidad USD/MXN de 5 días",y="", x="",color = "Volatilidad")+
   scale_color_manual(values=c(c.red,c.green,c.blue))
 p1
-ggexport(p1, filename = "TestCompareTS.pdf",width = 8, height = 4)
+ggexport(p1, filename = "TestCompareTS5.pdf",width = 8, height = 4)
 
 m1<-1
 m2<-2
@@ -192,7 +198,7 @@ p1<-ggplot(a, aes(x=as.Date(a$Fecha), y = value, color = variable))+th+
   geom_line(aes(y = a$Obs, col = "Observada"),size=1) +
   geom_line(aes(y = a$G, col = "G-LSTM"),size=0.8)+
   geom_line(aes(y = a$E, col = "E-LSTM"),size=0.8)+
-  geom_line(aes(y = a$GE, col = "GE-LSTM"),size=0.8)+  
+  geom_line(aes(y = a$GE, col = "G-E-LSTM"),size=0.8)+  
   labs(title="Volatilidad USD/MXN de 5 días",y="", x="",color = "Volatilidad")+
   scale_color_manual(values=c(c.red,c.llblue,c.green,c.blue))
 #subtitle = paste("De",date_format("%m/%Y")(as.Date(min(a$Fecha))),"a",date_format("%m/%Y")(as.Date(max(a$Fecha)))))
@@ -293,7 +299,7 @@ p1<-ggplot(a, aes(x=as.Date(a$Fecha), y = value, color = variable))+th+
                labels=date_format("%m/%Y"),
                limits = as.Date(c(min(a$Fecha),max(a$Fecha)))) + 
   geom_line(aes(y = a$Obs, col = "Observada"),size=1) +
-  geom_line(aes(y = a$E, col = "EGARCH"),size=0.7)+
+  geom_line(aes(y = a$E, col = "GARCH"),size=0.7)+
   geom_line(aes(y = a$GRU, col = "GRU"),size=0.7)+  
   geom_line(aes(y = a$EGL, col = "G-E-LSTM"),size=0.7)+ 
   geom_line(aes(y = a$EGG, col = "G-E-GRU"),size=0.7)+ 
