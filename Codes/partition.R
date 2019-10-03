@@ -48,6 +48,8 @@ for(i in 1:length(windows)){
                     windows[i]-1+test.uindex.vec[i])])
 }
 
+#indices para rendimientos
+
 train.indexes<-1:(train.uindex.vec[[1]]+windows[[1]]-1)
 val.indexes<-val.indexes.vec[[1]][1]:tail(val.indexes.vec[[1]])[1]+windows[[1]]-1
 test.indexes<-test.indexes.vec[[1]][1]:tail(test.indexes.vec[[1]])[1]+windows[[1]]-1
@@ -63,3 +65,8 @@ train.uindex.ts<-train.uindex
 val.uindex.ts<-val.uindex
 test.uindex.ts<-test.uindex
 n.ts<-n
+
+#train.uindex.vec almacena los limites superiores de cada ventana del conjunto de entrenamiento (dentro del vector)
+#train.uindexes almacena los indices del conjunto de entrenamiento para la ventana 1 (para los rendimientos, no volatilidades)
+
+

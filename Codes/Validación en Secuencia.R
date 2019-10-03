@@ -4,10 +4,11 @@ source(file="functions.R",echo=F)
 
 validation<-T
 scenaries<-5
-sizes<-seq(0.1,0.4,0.1)
+sizes<-seq(0.1,0.5,0.1)
 names.val<-c()
 names.val.index<-0
 compare.val<-list()
+w<-1
 
 for(s in 1:scenaries){
   compare.val[[s]]<-list()
@@ -24,7 +25,7 @@ for(p in 1:length(sizes)){
 metrics.val<-list()
 risk.estimate<-list()
 risk.estimate.mean<-list()
-limit<-length(sizes)
+limit<-length(sizes)-1
 
 for(s in 1:scenaries){
   risk.estimate[[s]]<-list()
@@ -158,26 +159,35 @@ q[9,1]<-"Val"
 q[17,1]<-"Test"
 q[,2]<-rep(models.names,3)
 
+# Promedio (para cada métrica) por pesos del conjunto de entrenamiento
+
+#MAE
+
 for(j in 1:length(sizes)){
   for(i in 1:8){
     q[seq(i,24,8),2+j]<-risk.estimate[[j]][[i]][seq(1,9,3),3]
   }
 }
-q
+q[,1:6]
+
+#RMSE
 
 for(j in 1:length(sizes)){
   for(i in 1:8){
     q[seq(i,24,8),2+j]<-risk.estimate[[j]][[i]][seq(1,9,3),4]
   }
 }
-q
+q[,1:6]
+
+
+#MAPE
 
 for(j in 1:length(sizes)){
   for(i in 1:8){
     q[seq(i,24,8),2+j]<-risk.estimate[[j]][[i]][seq(1,9,3),5]
   }
 }
-q
+q[,1:6]
 
 
 

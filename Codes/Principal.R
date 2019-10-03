@@ -135,7 +135,7 @@ alpha<-c(0.05,0.025,0.95,0.975,0.995,0.9975)
 cbind(sapply(alpha,function(x) quantile(abs(rend),x)),#cuantiles
       sapply(alpha,function(x) sum(abs(rend)>quantile(abs(rend),x))),#No. rend>cuantil
       sapply(alpha,function(x) sum(abs(rend)>quantile(abs(rend),x))/length(rend))#porcentaje rend>cuantil
-      )
+)
 umbral<-1.5e-2
 
 #umbral<-5.6e-3 #plot(rend,lwd=l1,col=ifelse(abs(rend)<umbral,"blue","red"))
@@ -160,7 +160,7 @@ alpha<-c(0.005,0.025,0.95,0.975,0.995,0.9975)
 cbind(sapply(alpha,function(x) quantile(abs(volatilities[[1]]),x)),
       sapply(alpha,function(x) sum(abs(volatilities[[1]])>quantile(abs(volatilities[[1]]),x))),
       sapply(alpha,function(x) sum(abs(volatilities[[1]])>quantile(abs(volatilities[[1]]),x))/length(volatilities[[1]]))
-      )
+)
 
 pdf("RendDaily.pdf")
 tsdisplay(rend,lwd=l1,col=c1,main="Rendimientos Diarios")
@@ -196,7 +196,7 @@ temp[which(temp[,2]>=0.05),]
 
 #### Acercamiento ####
 
-(model<-auto.arima(rend))
+(model<-auto.arima(vol))
 (model1<-arima(rend,order=c(1,0,0),include.mean = F))
 (model2<-arima(rend,order=c(0,0,1),include.mean = F))
 (model3<-arima(rend,order=c(1,0,1),include.mean = F))
@@ -228,21 +228,23 @@ tsdisplay(model1$residuals,lwd=l1,col=c1, main="Residuales AR(1)")
 tsdisplay(model2$residuals,lwd=l1,col=c1, main="Residuales MA(1)")
 tsdisplay(model3$residuals,lwd=l1,col=c1, main="Residuales ARMA(1,1)")
 
+a<-model
+
 temp<-matrix(0,ncol = 2,nrow = 35)
 for(i in 1:35){
-  temp[i,]<-c(i,Box.test(a@fit$residuals, lag = i, type = "Ljung")$p.value)
+  temp[i,]<-c(i,Box.test(a$residuals, lag = i, type = "Ljung")$p.value)
 }
 temp[which(temp[,2]>=0.05),]
 #Los residuales son independientes
 
 temp<-matrix(0,ncol = 2,nrow = 12)
 for(i in 1:12){
-  temp[i,]<-c(i,ArchTest(model3$residuals^2, lag = i)$p.value)
+  temp[i,]<-c(i,ArchTest(a$residuals^2, lag = i)$p.value)
 }
 temp[which(temp[,2]<0.05),]
 #Hay efectos efectos ARCH
 
-nortest::ad.test(model$residuals)
+nortest::ad.test(a$residuals)
 #Los residuales no siguen una distribucion normal
 
 adf.test(rend)
@@ -322,14 +324,13 @@ key<-key-1
 
 #### Seleccion ####
 
-k<-windows[1]:(train.uindex.vec[[1]])
-k2<-1:(train.uindex.vec[[1]]-windows[1]+1)
-k3<-train.indexes
+k<-windows[1]:(train.uindex.vec[[1]]+windows[1]-1)
+k2<-1:(train.uindex.vec[[1]])
 temp<-as.data.frame(cbind(1:length(garch.aic),garch.aic,garch.bic,
-                    sapply(unlist(garch.models),function(x)
-                          MAE(sigma(x)[k],volatilities[[1]][k2])),
-                    sapply(unlist(garch.models),function(x)
-                          MAPE(y_pred=sigma(x)[k],y_true=volatilities[[1]][k2]))))
+                          sapply(unlist(garch.models),function(x)
+                            MAE(sigma(x)[k],volatilities[[1]][k2])),
+                          sapply(unlist(garch.models),function(x)
+                            MAPE(y_pred=sigma(x)[k],y_true=volatilities[[1]][k2]))))
 colnames(temp)<-c("key","AIC","BIC","MAE", "MAPE")
 a<-temp[order(unlist(temp$AIC)),]
 b<-temp[order(unlist(temp$BIC)),]
@@ -503,9 +504,8 @@ key<-key-1
 
 #### Seleccion ####
 
-k<-windows[1]:(train.uindex.vec[[1]])
-k2<-1:(train.uindex.vec[[1]]-windows[1]+1)
-k3<-train.indexes
+k<-windows[1]:(train.uindex.vec[[1]]+windows[1]-1)
+k2<-1:(train.uindex.vec[[1]])
 temp<-as.data.frame(cbind(1:length(egarch.aic),egarch.aic,egarch.bic,
                           sapply(unlist(egarch.models),function(x)
                             MAE(sigma(x)[k],volatilities[[1]][k2])),
@@ -640,18 +640,15 @@ gru.error.test<-error.test
 compare("t2")
 models.names[2]<-name
 #rnn.plots(models.names[2])
-# Correlacion entre variables de entrada modelos híbrido GARCH-EGARCH-RNN
-# q<-as.data.frame(matrix(c(xi[[1]],xi[[2]],xi[[3]]),ncol=3,byrow=F))
-# cor(q)
 
 #### Hibridos ####
 
 a<-prediction.sigma.1d(garch.model,val=T,w=1,t=length(val.indexes.vec[[1]]))
-b<-prediction.sigma.1d(garch.model,val=F,w=1,t=length(rend)-val.uindex.ts)
-sigmas.garch<-c(as.double(sigma(garch.model)),a,b)
+b<-prediction.sigma.1d(garch.model,val=F,w=1,t=length(volatilities[[1]])-val.uindex.vec[[1]])
+sigmas.garch<-c(as.double(sigma(garch.model)[1:(train.uindex.vec[w]+windows[w]-1)]),a,b)
 a<-prediction.sigma.1d(egarch.model,val=T,w=1,t=length(val.indexes.vec[[1]]))
-b<-prediction.sigma.1d(egarch.model,val=F,w=1,t=length(rend)-val.uindex.ts)
-sigmas.egarch<-c(as.double(sigma(egarch.model)),a,b)
+b<-prediction.sigma.1d(egarch.model,val=F,w=1,t=length(volatilities[[1]])-val.uindex.vec[[1]])
+sigmas.egarch<-c(as.double(sigma(egarch.model)[1:(train.uindex.vec[w]+windows[w]-1)]),a,b)
 a1<-1 #egarch.model@fit$matcoef[3,1]
 g1<-egarch.model@fit$matcoef[5,1]
 
@@ -725,7 +722,8 @@ q[,2]<-xi[[2]]
 q[,3]<-xi[[3]]
 q<-as.data.frame(q)
 colnames(q)<-c("GARCH","EGARCH","Vol")
-corrplot::corrplot(q)
+cor(q)
+#corrplot::corrplot(q)
 
 #### PLOTS ####
 
@@ -813,9 +811,11 @@ e.g.lstm.error.test<-error.test
 
 #### Comparaciones #####
 
-op<-"t1"
-temp<-compare(op)
-temp
+for(i in 1:8){
+  op<-paste("t",i,sep="")
+  temp<-compare(op)
+  print(temp)
+}
 
 #### bkt ####
 #model <- load_model_hdf5("model-LSTM.h5")

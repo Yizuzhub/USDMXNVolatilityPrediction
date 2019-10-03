@@ -221,9 +221,9 @@ prediction.sigma<-function(fit,w=1,val=T,t=1){
   spec <- getspec(fit)
   setfixed(spec) <- as.list(coef(fit))
   if(val){
-    pred <- ugarchforecast(spec, n.ahead = t, n.roll = 0, data = rend[1:train.uindex.vec[w]], out.sample = 0)
+    pred <- ugarchforecast(spec, n.ahead = t, n.roll = 0, data = rend[1:(train.uindex.vec[w]+windows[w]-1)], out.sample = 0)
   }else{
-    pred <- ugarchforecast(spec, n.ahead = t, n.roll = 0, data = rend[1:val.uindex.vec[w]], out.sample = 0)
+    pred <- ugarchforecast(spec, n.ahead = t, n.roll = 0, data = rend[1:(val.uindex.vec[w]+windows[w]-1)], out.sample = 0)
   }
   pred.sigmas <- sigma(pred)
   return(pred.sigmas)
@@ -233,9 +233,9 @@ prediction.fitted<-function(fit,w=1,val=T,t=1){
   spec = getspec(fit)
   setfixed(spec) <- as.list(coef(fit))
   if(val){
-    pred = ugarchforecast(spec, n.ahead = t, n.roll = 0, data = rend[1:train.uindex.vec[w]], out.sample = 0)
+    pred = ugarchforecast(spec, n.ahead = t, n.roll = 0, data = rend[1:(train.uindex.vec[w]+windows[w]-1)], out.sample = 0)
   }else{
-    pred = ugarchforecast(spec, n.ahead = t, n.roll = 0, data = rend[1:val.uindex.vec[w]], out.sample = 0)
+    pred = ugarchforecast(spec, n.ahead = t, n.roll = 0, data = rend[1:(val.uindex.vec[w]+windows[w]-1)], out.sample = 0)
   }
   pred.fitted = fitted(pred)
   return(pred.fitted)
@@ -247,12 +247,12 @@ prediction.sigma.1d<-function(fit,w=1,val=T,t=1){
   sigmas<-c()
   if(val){
     for(i in 1:t){
-      pred = ugarchforecast(spec, n.ahead = 1, n.roll = 0, data = rend[1:(train.uindex.vec[w]+i-1)], out.sample = 0)
+      pred = ugarchforecast(spec, n.ahead = 1, n.roll = 0, data = rend[1:((train.uindex.vec[w]+windows[w]-1)+i-1)], out.sample = 0)
       sigmas[i]<-sigma(pred)
     }
   }else{
     for(i in 1:t){
-      pred = ugarchforecast(spec, n.ahead = 1, n.roll = 0, data = rend[1:(val.uindex.vec[w]+i-1)], out.sample = 0)
+      pred = ugarchforecast(spec, n.ahead = 1, n.roll = 0, data = rend[1:((val.uindex.vec[w]+windows[w]-1)+i-1)], out.sample = 0)
       sigmas[i]<-sigma(pred)
     }
   }
@@ -266,12 +266,12 @@ prediction.fitted.1d<-function(fit,w=1,val=T,t=1){
   fitteds<-c()
   if(val){
     for(i in 1:t){
-      pred = ugarchforecast(spec, n.ahead = 1, n.roll = 0, data = rend[1:(train.uindex.vec[w]+i-1)], out.sample = 0)
+      pred = ugarchforecast(spec, n.ahead = 1, n.roll = 0, data = rend[1:((train.uindex.vec[w]+windows[w]-1)+i-1)], out.sample = 0)
       fitteds[i]<-fitted(pred)
     }
   }else{
     for(i in 1:t){
-      pred = ugarchforecast(spec, n.ahead = 1, n.roll = 0, data = rend[1:(val.uindex.vec[w]+i-1)], out.sample = 0)
+      pred = ugarchforecast(spec, n.ahead = 1, n.roll = 0, data = rend[1:((val.uindex.vec[w]+windows[w]-1)+i-1)], out.sample = 0)
       fitteds[i]<-fitted(pred)
     }
   }

@@ -73,7 +73,7 @@ pred<-as.data.frame(cbind(as.Date(data$Fecha[(train.uindex.vec[w]+windows[w]+1):
 colnames(pred)<-c("Fecha",  "Observada","Estimada")
 pred$Fecha<-as.Date(pred$Fecha)
 p2<-ggplot(pred, aes(x=as.Date(pred$Fecha), y = value))+
-  scale_x_date(date_breaks = "3 months",
+  scale_x_date(date_breaks = "1 year",
                labels=date_format("%m/%Y"),
                limits = as.Date(c(min(pred$Fecha),max(pred$Fecha)))) + 
   geom_line(aes(y = pred$Observada, col = "Observada"),size=size)+
@@ -86,7 +86,7 @@ pred<-as.data.frame(cbind(as.Date(data$Fecha[(val.uindex.vec[w]+windows[w]+1):(t
 colnames(pred)<-c("Fecha",  "Observada","Estimada")
 pred$Fecha<-as.Date(pred$Fecha)
 p3<-ggplot(pred, aes(x=as.Date(pred$Fecha), y = value))+
-  scale_x_date(date_breaks = "3 months",
+  scale_x_date(date_breaks = "1 year",
                labels=date_format("%m/%Y"),
                limits = as.Date(c(min(pred$Fecha),max(pred$Fecha)))) + 
   geom_line(aes(y = pred$Observada, col = "Observada"),size=size)+

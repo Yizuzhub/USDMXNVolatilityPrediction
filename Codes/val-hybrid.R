@@ -3,21 +3,21 @@ portion.test<-portion.val
 source("partition.R",echo=F)
 
 garch.spec <- ugarchspec(variance.model=list(model="sGARCH",garchOrder=c(1,1)),
-                         mean.model=list(armaOrder=c(1,0), include.mean=F),distribution="sged")
+                         mean.model=list(armaOrder=c(0,1), include.mean=F),distribution="sged")
 temp.garch<-ugarchfit(garch.spec, rend[train.indexes],solver = "hybrid")
 
 egarch.spec <- ugarchspec(variance.model=list(model="eGARCH",garchOrder=c(1,1)),
-                          mean.model=list(armaOrder=c(1,0), include.mean=F),distribution="sged")
+                          mean.model=list(armaOrder=c(0,1), include.mean=F),distribution="sged")
 temp.egarch<-ugarchfit(egarch.spec, rend[train.indexes],solver = "hybrid")
 
 a<-prediction.sigma.1d(temp.garch,val=T,w=1,t=length(val.indexes.vec[[1]]))
-b<-prediction.sigma.1d(temp.garch,val=F,w=1,t=length(rend)-val.uindex.ts)
-sigmas.garch<-c(as.double(sigma(temp.garch)),a,b)
+b<-prediction.sigma.1d(temp.garch,val=F,w=1,t=length(volatilities[[1]])-val.uindex.vec[[1]])
+sigmas.garch<-c(as.double(sigma(temp.garch)[1:(train.uindex.vec[1]+windows[1]-1)]),a,b)
 a<-prediction.sigma.1d(temp.egarch,val=T,w=1,t=length(val.indexes.vec[[1]]))
-b<-prediction.sigma.1d(temp.egarch,val=F,w=1,t=length(rend)-val.uindex.ts)
-sigmas.egarch<-c(as.double(sigma(temp.egarch)),a,b)
+b<-prediction.sigma.1d(temp.egarch,val=F,w=1,t=length(volatilities[[1]])-val.uindex.vec[[1]])
+sigmas.egarch<-c(as.double(sigma(temp.egarch)[1:(train.uindex.vec[w]+windows[1]-1)]),a,b)
 
-a1<-1#temp.egarch@fit$matcoef[3,1]
+a1<-1 #egarch.model@fit$matcoef[3,1]
 g1<-temp.egarch@fit$matcoef[5,1]
 
 #### Ajuste ####

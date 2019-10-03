@@ -19,8 +19,8 @@ if(isHybrid){
     #xi[[1]]<-as.double(sigmas.garch[windows[w]:(windows[w]+length(volatilities[[w]])-1)])*escalar
     #xi[[2]]<-as.double(sigmas.egarch[windows[w]:(windows[w]+length(volatilities[[w]])-1)])*escalar
     temp<-c(0,diff(rend))
-    xi[[1]]<-sapply((windows[w]):(windows[w]+length(volatilities[[w]])-1),function(x)
-      abs(temp[x])*sigmas.garch[x])*escalar*floor(1/max(abs(temp)))
+    xi[[1]]<-abs(sapply((windows[w]):(windows[w]+length(volatilities[[w]])-1),function(x)
+      temp[x]*sigmas.garch[x]))*escalar*floor(1/max(abs(temp)))
     xi[[2]]<-sapply((windows[w]):(windows[w]+length(volatilities[[w]])-1),function(x)
       ifelse(temp[x]<0,
              (-g1+a1)*temp[x]*sigmas.egarch[x],
@@ -38,8 +38,8 @@ if(isHybrid){
     #xi[[1]]<-((diff(fitteds.garch)[-1])/(sigmas.garch[-c(1,2)]))[windows[w]:(windows[w]+length(volatilities[[w]])-1)]
     #xi[[1]]<-(diff(fitteds.garch)[-1])[windows[w]:(windows[w]+length(volatilities[[w]])-1)]*escalar
     temp<-c(0,diff(rend))
-    xi[[1]]<-sapply((windows[w]):(windows[w]+length(volatilities[[w]])-1), function(x)
-      abs(temp[x])*sigmas.garch[x])*escalar*floor(1/max(abs(temp)))
+    xi[[1]]<-abs(sapply((windows[w]):(windows[w]+length(volatilities[[w]])-1), function(x)
+      temp[x]*sigmas.garch[x]))*escalar*floor(1/max(abs(temp)))
     xi[[2]]<-volatilities[[w]]*escalar
     name<-"GARCH"
     if(isLSTM){
