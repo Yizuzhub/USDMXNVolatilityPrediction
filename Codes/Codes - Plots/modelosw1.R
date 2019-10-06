@@ -83,7 +83,7 @@ colnames(pred2)<-c("Fecha","Observada","Estimada")
 colnames(pred3)<-c("Fecha","Observada","Estimada")
 colnames(pred4)<-c("Fecha","Observada","Estimada")
 a<-as.data.frame(cbind(pred2[,1:2],pred1,pred2[,3],pred3[,3],pred4[,3]))
-colnames(a)<-c("Fecha","Obs","G","GRU","EGL","EGG")
+colnames(a)<-c("Fecha","Obs","G","GRU","EGG","EGL")
 p1<-ggplot(a, aes(x=as.Date(a$Fecha), y = value, color = variable))+th+
   scale_x_date(date_breaks = "1 year",
                labels=date_format("%m/%Y"),

@@ -194,8 +194,12 @@ print(temp)
 temp[which(temp[,2]>=0.05),]
 #Los rendimientos no son independientes
 
+nortest::ad.test(rend)
+#Los rendimientos no se distribuyen normal.
+
 #### Acercamiento ####
 
+vol<-rend
 (model<-auto.arima(vol))
 (model1<-arima(rend,order=c(1,0,0),include.mean = F))
 (model2<-arima(rend,order=c(0,0,1),include.mean = F))
@@ -218,6 +222,14 @@ tsdisplay(model$residuals^2,lwd=l1,col=c1, main="Residuales Cuadráticos ARMA(2,3
 tsdisplay(abs(model$residuals),lwd=l1,col=c1, main="Residuales Absolutos ARMA(2,3) con Tendencia")
 
 par(mfrow=c(1,2))
+acf(model$residuals,lwd=l1,col=c1, main="Residuales ARMA(2,3) con Tendencia")
+pacf(model$residuals,lwd=l1,col=c1, main="Residuales ARMA(2,3) con Tendencia")
+acf(model$residuals^2,lwd=l1,col=c1, main="Residuales Cuadráticos ARMA(2,3) con Tendencia")
+pacf(model$residuals^2,lwd=l1,col=c1, main="Residuales Cuadráticos ARMA(2,3) con Tendencia")
+acf(abs(model$residuals),lwd=l1,col=c1, main="Residuales Absolutos ARMA(2,3) con Tendencia")
+pacf(abs(model$residuals),lwd=l1,col=c1, main="Residuales Absolutos ARMA(2,3) con Tendencia")
+
+par(mfrow=c(1,2))
 acf(abs(model$residuals),lwd=l1,col=c1, main="Residuales Absolutos ARMA(2,3)")
 pacf(abs(model$residuals),lwd=l1,col=c1, main="Residuales Absolutos ARMA(2,3)")
 
@@ -228,14 +240,14 @@ tsdisplay(model1$residuals,lwd=l1,col=c1, main="Residuales AR(1)")
 tsdisplay(model2$residuals,lwd=l1,col=c1, main="Residuales MA(1)")
 tsdisplay(model3$residuals,lwd=l1,col=c1, main="Residuales ARMA(1,1)")
 
-a<-model
+a<-model1
 
 temp<-matrix(0,ncol = 2,nrow = 35)
 for(i in 1:35){
   temp[i,]<-c(i,Box.test(a$residuals, lag = i, type = "Ljung")$p.value)
 }
 temp[which(temp[,2]>=0.05),]
-#Los residuales son independientes
+#Los residuales no correlacionados
 
 temp<-matrix(0,ncol = 2,nrow = 12)
 for(i in 1:12){
@@ -248,7 +260,7 @@ nortest::ad.test(a$residuals)
 #Los residuales no siguen una distribucion normal
 
 adf.test(rend)
-#El proceso no tiene raíces unitarias
+#El proceso no tiene raíces unitarias -> rendimientos son estacionarios
 
 #### Graficas ####
 

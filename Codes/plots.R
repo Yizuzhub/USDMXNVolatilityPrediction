@@ -95,7 +95,7 @@ p<-ggtsdisplay(model$residuals,theme=ggt+theme(legend.text=element_text(size=16)
                                                axis.title.x = element_text(size = rel(1.5), angle = 0),
                                                axis.title.y =  element_text(size = rel(1.5), angle = 90),
                                                plot.title = element_text(size = rel(1.5), hjust = 0.5, angle = 0, face="bold")),
-               main='Residuales de Rendimientos ARIMA(2,0,3)')
+               main='Residuales de Rendimientos ARMA(2,3)')
 #ResidARIMATSdisp.pdf
 
 #"HistRendNormality.pdf"
@@ -116,3 +116,22 @@ for(i in 1:length(means)){
   dev.off()
   ts.plot(means[[i]],lwd=l1,col=c1,gpars=list(ylab=ylab, xlab="DIAS"))
 }
+
+pdf("Rend-ACF-PACF.pdf")
+par(mfrow=c(1,2))
+acf(rend,main="ACF")
+pacf(rend,main="PACF")
+dev.off()
+
+pdf("Rend-ACF-PACF.pdf")
+par(mfrow=c(1,2))
+acf(rend^2,main="ACF")
+pacf(rend^2,main="PACF")
+dev.off()
+
+pdf("RendAbs-ACF-PACF.pdf")
+par(mfrow=c(1,2))
+acf(abs(rend),main="ACF")
+pacf(abs(rend),main="PACF")
+dev.off()
+

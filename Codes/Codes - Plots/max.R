@@ -225,9 +225,9 @@ ggexport(p1, filename = "TestCompareHybridGRU.pdf",width = 8, height = 4)
 m1<-3
 m2<-4
 m3<-5
-pred1<-as.data.frame(cbind(fechas.test,y.val,predict.val[[m1]]))
-pred2<-as.data.frame(cbind(fechas.test,y.val,predict.val[[m2]]))
-pred3<-as.data.frame(cbind(fechas.test,y.val,predict.val[[m3]]))
+pred1<-as.data.frame(cbind(fechas.val,y.val,predict.val[[m1]]))
+pred2<-as.data.frame(cbind(fechas.val,y.val,predict.val[[m2]]))
+pred3<-as.data.frame(cbind(fechas.val,y.val,predict.val[[m3]]))
 colnames(pred1)<-c("Fecha","Observada","Estimada")
 colnames(pred2)<-c("Fecha","Observada","Estimada")
 colnames(pred3)<-c("Fecha","Observada","Estimada")
