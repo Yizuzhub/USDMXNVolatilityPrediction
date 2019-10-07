@@ -131,10 +131,9 @@ nortest::ad.test(rend)
 # Num. rend > umbral
 cbind(seq(0,0.05,0.01),sapply(0:5,function(x) length(rend[abs(rend)>0.01*x])))
 
-alpha<-c(0.05,0.025,0.95,0.975,0.995,0.9975)
-cbind(sapply(alpha,function(x) quantile(abs(rend),x)),#cuantiles
-      sapply(alpha,function(x) sum(abs(rend)>quantile(abs(rend),x))),#No. rend>cuantil
-      sapply(alpha,function(x) sum(abs(rend)>quantile(abs(rend),x))/length(rend))#porcentaje rend>cuantil
+alpha<-c(0.025,0.05,0.95,0.975,0.995,0.9975)
+cbind(sapply(alpha,function(x) quantile(rend,x)),#cuantiles
+      sapply(alpha,function(x) quantile(abs(rend),x))#No. rend>cuantil
 )
 umbral<-1.5e-2
 
@@ -156,10 +155,10 @@ for(i in 1:length(windows)){
   means[[i]]<-as.ts(mean.estimate(rend,windows[i]))
 }
 
-alpha<-c(0.005,0.025,0.95,0.975,0.995,0.9975)
-cbind(sapply(alpha,function(x) quantile(abs(volatilities[[1]]),x)),
-      sapply(alpha,function(x) sum(abs(volatilities[[1]])>quantile(abs(volatilities[[1]]),x))),
-      sapply(alpha,function(x) sum(abs(volatilities[[1]])>quantile(abs(volatilities[[1]]),x))/length(volatilities[[1]]))
+alpha<-c(0.025,0.05,0.95,0.975,0.995,0.9975)
+cbind(sapply(alpha,function(x) quantile(volatilities[[1]],x)),
+      sapply(alpha,function(x) quantile(volatilities[[2]],x)),
+      sapply(alpha,function(x) quantile(volatilities[[3]],x))
 )
 
 pdf("RendDaily.pdf")
